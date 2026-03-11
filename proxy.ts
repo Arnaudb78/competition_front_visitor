@@ -5,7 +5,18 @@ export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const isPublic = pathname === "/" || pathname.startsWith("/auth");
-  if (!token && !isPublic) {
+  const isVisitor = pathname.startsWith("/visit");
+
+  if (isVisitor && pathname !== "/visit/desktop") {
+    const ua = req.headers.get("user-agent") ?? "";
+    const isMobile =
+      /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(ua);
+    if (!isMobile) {
+      return NextResponse.redirect(new URL("/visit/desktop", req.url));
+    }
+  }
+
+  if (!token && !isPublic && !isVisitor) {
     return NextResponse.redirect(new URL("/", req.url));
   }
   if (token && isPublic) {
