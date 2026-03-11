@@ -1,6 +1,11 @@
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api'
 
-export async function createGroup(participants: string[]): Promise<string> {
+export interface ParticipantInput {
+  name: string;
+  age: number;
+}
+
+export async function createGroup(participants: ParticipantInput[]): Promise<string> {
   const res = await fetch(`${API}/groups`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -9,7 +14,7 @@ export async function createGroup(participants: string[]): Promise<string> {
   if (!res.ok) throw new Error('Erreur création groupe')
   const data = await res.json()
   localStorage.setItem('visit_group_id', data._id)
-  localStorage.setItem('visit_participants', JSON.stringify(participants))
+  localStorage.setItem('visit_participants', JSON.stringify(participants.map((p) => p.name)))
   return data._id
 }
 

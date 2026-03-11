@@ -3,42 +3,63 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Plus, Minus } from "lucide-react";
-import { createGroup } from "@/lib/visit";
+import { createGroup, ParticipantInput } from "@/lib/visit";
+
+interface ParticipantForm {
+  name: string;
+  age: number;
+}
 
 export default function ParticipantsPage() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [count, setCount] = useState(1);
-  const [names, setNames] = useState<string[]>([""]);
+  const [participants, setParticipants] = useState<ParticipantForm[]>([{ name: "", age: 18 }]);
   const [loading, setLoading] = useState(false);
 
   function updateCount(n: number) {
     const next = Math.max(1, Math.min(10, n));
     setCount(next);
-    setNames((prev) => {
+    setParticipants((prev) => {
       const arr = [...prev];
-      while (arr.length < next) arr.push("");
+      while (arr.length < next) arr.push({ name: "", age: 18 });
       return arr.slice(0, next);
     });
   }
 
   function updateName(i: number, value: string) {
-    setNames((prev) => prev.map((n, idx) => (idx === i ? value : n)));
+    setParticipants((prev) =>
+      prev.map((p, idx) => (idx === i ? { ...p, name: value } : p))
+    );
+  }
+
+  function updateAge(i: number, delta: number) {
+    setParticipants((prev) =>
+      prev.map((p, idx) =>
+        idx === i ? { ...p, age: Math.max(1, Math.min(99, p.age + delta)) } : p
+      )
+    );
   }
 
   async function handleContinue() {
     if (step === 1) {
       setStep(2);
     } else {
-      const filled = names.map((n) => n.trim()).filter(Boolean);
+      const filled = participants.filter((p) => p.name.trim().length > 0);
       if (filled.length === 0) return;
       setLoading(true);
+      const payload: ParticipantInput[] = filled.map((p) => ({
+        name: p.name.trim(),
+        age: p.age,
+      }));
       try {
-        await createGroup(filled);
+        await createGroup(payload);
         router.push("/visit/map");
       } catch {
-        // Fallback localStorage si API KO
-        localStorage.setItem("visit_participants", JSON.stringify(filled));
+        localStorage.setItem(
+          "visit_participants",
+          JSON.stringify(payload.map((p) => p.name))
+        );
         router.push("/visit/map");
       } finally {
         setLoading(false);
@@ -46,7 +67,8 @@ export default function ParticipantsPage() {
     }
   }
 
-  const canContinue = step === 1 || names.some((n) => n.trim().length > 0);
+  const canContinue =
+    step === 1 || participants.some((p) => p.name.trim().length > 0);
 
   return (
     <div
@@ -100,7 +122,7 @@ export default function ParticipantsPage() {
             <div className="flex items-center justify-center gap-8">
               <button
                 onClick={() => updateCount(count - 1)}
-                className="text-white/70 hover:text-white text-2xl font-light transition-colors w-10 h-10 flex items-center justify-center"
+                className="text-white/70 hover:text-white transition-colors w-10 h-10 flex items-center justify-center"
               >
                 <Minus className="w-5 h-5" />
               </button>
@@ -109,7 +131,7 @@ export default function ParticipantsPage() {
               </span>
               <button
                 onClick={() => updateCount(count + 1)}
-                className="text-white/70 hover:text-white text-2xl font-light transition-colors w-10 h-10 flex items-center justify-center"
+                className="text-white/70 hover:text-white transition-colors w-10 h-10 flex items-center justify-center"
               >
                 <Plus className="w-5 h-5" />
               </button>
@@ -117,7 +139,7 @@ export default function ParticipantsPage() {
           </div>
         )}
 
-        {/* Étape 2 — Prénoms */}
+        {/* Étape 2 — Prénoms + âges */}
         {step === 2 && (
           <div className="flex flex-col flex-1">
             <h1 className="text-2xl font-bold text-white text-center mb-2">
@@ -128,19 +150,45 @@ export default function ParticipantsPage() {
               challenges
             </p>
 
-            <div className="flex flex-col gap-3 overflow-y-auto flex-1">
-              {names.map((name, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span className="w-7 h-7 rounded-full bg-white/10 text-white/60 text-xs font-bold flex items-center justify-center flex-shrink-0">
-                    {i + 1}
-                  </span>
-                  <input
-                    type="text"
-                    placeholder={`Prénom du participant ${i + 1}`}
-                    value={name}
-                    onChange={(e) => updateName(i, e.target.value)}
-                    className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#f5c842] transition-colors"
-                  />
+            <div className="flex flex-col gap-4 overflow-y-auto flex-1">
+              {participants.map((p, i) => (
+                <div key={i} className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="w-7 h-7 rounded-full bg-white/10 text-white/60 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                      {i + 1}
+                    </span>
+                    <input
+                      type="text"
+                      placeholder={`Prénom du participant ${i + 1}`}
+                      value={p.name}
+                      onChange={(e) => updateName(i, e.target.value)}
+                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[#f5c842] transition-colors"
+                    />
+                  </div>
+
+                  {/* Compteur d'âge */}
+                  <div className="ml-10 flex items-center gap-3">
+                    <span className="text-white/50 text-xs">Âge</span>
+                    <div className="flex items-center gap-3 bg-white/10 border border-white/20 rounded-xl px-4 py-2">
+                      <button
+                        type="button"
+                        onClick={() => updateAge(i, -1)}
+                        className="text-white/60 hover:text-white transition-colors"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="text-white font-semibold text-sm w-8 text-center">
+                        {p.age}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => updateAge(i, 1)}
+                        className="text-white/60 hover:text-white transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
