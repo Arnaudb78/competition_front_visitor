@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mirokaï Experience — App Visiteur
 
-## Getting Started
+Application **PWA mobile** pour les visiteurs de la Mirokaï Experience.
+Construite avec **Next.js 15** (App Router) et **Tailwind CSS**.
 
-First, run the development server:
+> **Mobile uniquement.** L'accès depuis un desktop affiche une page de redirection avec un QR code pointant vers l'app. L'application est installable sur l'écran d'accueil (PWA).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Parcours utilisateur
+
+```
+/visit                → Splash screen (2s) + bouton démarrer
+/visit/participants   → Onboarding : nombre de participants, prénoms et âges
+/visit/map            → Plan interactif avec les modules à visiter
+/visit/module/[id]    → Détail d'un module (média, description, validation)
+/visit/end            → Classement final de l'équipe
+/visit/desktop        → Page de blocage pour les accès desktop
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+competition-front-visitor/
+├── app/
+│   └── (visitor)/visit/
+│       ├── page.tsx            → Splash screen
+│       ├── participants/       → Onboarding participants
+│       ├── map/                → Plan interactif
+│       ├── module/[id]/        → Détail module
+│       ├── end/                → Classement
+│       └── desktop/            → Blocage desktop
+├── lib/
+│   └── visit.ts               → Fonctions API (groupe, score, modules)
+└── public/
+    ├── splash_screen.png       → Écran d'accueil
+    ├── onboarding1.png         → Background étape 1
+    ├── onboarding2.png         → Background étape 2
+    └── mirokai-plan.png        → Plan de l'expérience
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Prérequis
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Node.js** 20+
+- **pnpm** — `npm install -g pnpm`
+- Le [backend](../back-project) lancé (local ou production)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Installation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+git clone <url-du-repo>
+cd competition-front-visitor
+pnpm install
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Configuration
+
+Créer un fichier `.env.local` à la racine :
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+```
+
+---
+
+## Lancer en développement
+
+```bash
+pnpm dev
+```
+
+Ouvrir `http://localhost:3000/visit`
+
+> Pour tester sur desktop, utiliser les DevTools du navigateur en mode mobile (ex : iPhone 14 Pro dans Chrome DevTools).
+
+---
+
+## Fonctionnement technique
+
+### Session visiteur
+La session est stockée dans le `localStorage` du navigateur :
+
+| Clé | Contenu |
+|---|---|
+| `visit_group_id` | ID MongoDB du groupe créé |
+| `visit_participants` | Liste des prénoms (fallback si API KO) |
+
+### Attribution des scores
+- Chaque module validé = **+100 points**
+- En groupe, le participant qui a visité le module est sélectionné avant validation
+- Les scores sont stockés côté serveur dans la collection `groups`
+
+### Fallback hors-ligne
+Si l'API est inaccessible, le parcours continue avec les données en `localStorage`. Les scores ne sont alors pas persistés.
+
+---
+
+## Assets à fournir
+
+Les images suivantes doivent être placées dans `/public` :
+
+| Fichier | Dimensions recommandées | Usage |
+|---|---|---|
+| `splash_screen.png` | 440×956 px | Écran d'accueil |
+| `onboarding1.png` | 440×956 px | Fond étape 1 (nombre) |
+| `onboarding2.png` | 440×956 px | Fond étape 2 (prénoms) |
+| `mirokai-plan.png` | 1536×1418 px | Plan de l'expérience |
+
+---
+
+## Build & déploiement
+
+```bash
+pnpm build
+pnpm start
+```
+
+### Variables d'environnement en production
+
+```env
+NEXT_PUBLIC_API_URL=https://api.mirokai-experience.fr/api
+```
