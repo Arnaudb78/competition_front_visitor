@@ -3,7 +3,13 @@
 import { Settings, Zap, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function getCookie(name: string): string {
+  if (typeof document === "undefined") return "";
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : "";
+}
 
 const MOCK_EVENTS = [
   {
@@ -39,6 +45,13 @@ const MOCK_EVENTS = [
 export default function HomePage() {
   const router = useRouter();
   const [spinning, setSpinning] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  useEffect(() => {
+    setFirstName(getCookie("account_firstName"));
+    setLastName(getCookie("account_lastName"));
+  }, []);
 
   function handleSettings() {
     if (spinning) return;
@@ -64,7 +77,7 @@ export default function HomePage() {
             className="text-3xl font-bold leading-tight"
             style={{ fontFamily: "'ESPeak', sans-serif", color: "#FFCA44" }}
           >
-            Martine Dupont
+            {firstName} {lastName}
           </p>
         </div>
         <button

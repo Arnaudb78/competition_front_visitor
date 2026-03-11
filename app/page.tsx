@@ -67,8 +67,11 @@ export default function AuthPage() {
         setSigninError(data.message ?? "Identifiants incorrects");
         return;
       }
-      const data = (await res.json()) as { access_token: string };
-      document.cookie = `account_token=${data.access_token}; path=/; max-age=${7 * 24 * 3600}; SameSite=Lax`;
+      const data = (await res.json()) as { access_token: string; account: { firstName: string; lastName: string } };
+      const maxAge = 7 * 24 * 3600;
+      document.cookie = `account_token=${data.access_token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `account_firstName=${encodeURIComponent(data.account.firstName)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `account_lastName=${encodeURIComponent(data.account.lastName)}; path=/; max-age=${maxAge}; SameSite=Lax`;
       router.push("/home");
     } catch {
       setSigninError("Erreur de connexion au serveur");
@@ -106,8 +109,11 @@ export default function AuthPage() {
         setSignupError(data.message ?? "Erreur lors de l'inscription");
         return;
       }
-      const data = (await res.json()) as { access_token: string };
-      document.cookie = `account_token=${data.access_token}; path=/; max-age=${7 * 24 * 3600}; SameSite=Lax`;
+      const data = (await res.json()) as { access_token: string; account: { firstName: string; lastName: string } };
+      const maxAge = 7 * 24 * 3600;
+      document.cookie = `account_token=${data.access_token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `account_firstName=${encodeURIComponent(data.account.firstName)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `account_lastName=${encodeURIComponent(data.account.lastName)}; path=/; max-age=${maxAge}; SameSite=Lax`;
       router.push("/home");
     } catch {
       setSignupError("Erreur de connexion au serveur");
