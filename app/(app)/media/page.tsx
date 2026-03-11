@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ClipsFeed } from "./clips-feed";
+import { ReplaysFeed } from "./replays-feed";
 
 type Tab = "replays" | "live" | "clips";
 
@@ -12,7 +13,7 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 export default function MediaPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("clips");
+  const [activeTab, setActiveTab] = useState<Tab>("replays");
 
   // Clips = fullscreen fixed, les autres tabs = layout normal
   if (activeTab === "clips") {
@@ -26,9 +27,9 @@ export default function MediaPage() {
   }
 
   return (
-    <div className="min-h-dvh px-5 pt-12 pb-32">
+    <div className="min-h-dvh pt-12">
       {/* Tabs */}
-      <div className="flex items-center gap-6 mb-6">
+      <div className="flex items-center gap-6 px-5 mb-4">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -45,11 +46,11 @@ export default function MediaPage() {
         ))}
       </div>
 
-      {activeTab === "replays" && (
-        <p className="text-white/40 text-sm">Replays — à venir…</p>
-      )}
+      {activeTab === "replays" && <ReplaysFeed />}
       {activeTab === "live" && (
-        <p className="text-white/40 text-sm">Live — à venir…</p>
+        <div className="px-5">
+          <p className="text-white/40 text-sm">Live — à venir…</p>
+        </div>
       )}
     </div>
   );
