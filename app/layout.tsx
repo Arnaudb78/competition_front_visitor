@@ -1,16 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Mirokaï Experience",
-  description:
-    "Venez découvrir l'incroyable Mirokaï experience au sein de Paris.",
+  description: "Venez découvrir l'incroyable Mirokaï experience au sein de Paris.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -24,17 +17,15 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0a0a0a",
+  themeColor: "#0d0b1e",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={geistSans.variable}>
-      <body className="antialiased" cz-listen="true">
+    <html lang="fr">
+      <body className="antialiased" style={{ fontFamily: "'SpaceGrotesk', sans-serif" }}>
         {children}
       </body>
     </html>

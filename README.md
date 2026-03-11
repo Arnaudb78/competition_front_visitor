@@ -113,6 +113,10 @@ Les images suivantes doivent être placées dans `/public` :
 | `onboarding1.png` | 440×956 px | Fond étape 1 (nombre) |
 | `onboarding2.png` | 440×956 px | Fond étape 2 (prénoms) |
 | `mirokai-plan.png` | 1536×1418 px | Plan de l'expérience |
+| `icons/icon-192.png` | 192×192 px | Icône PWA (Android) |
+| `icons/icon-512.png` | 512×512 px | Icône PWA (splash install) |
+
+> Les icônes PWA sont à fournir par l'équipe design. Une fois disponibles, les ajouter dans `public/icons/` et mettre à jour `public/manifest.json`.
 
 ---
 
