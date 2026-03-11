@@ -76,7 +76,10 @@ export default function CalendrierPage() {
     return eventDates.has(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`);
   }
 
-  const selectedEvents = events.filter((e) => isSameDay(new Date(e.date), selectedDate));
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const upcomingEvents = events
+    .filter((e) => new Date(e.date) >= todayStart)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   function prevMonth() {
     setViewDate(new Date(year, month - 1, 1));
@@ -173,20 +176,20 @@ export default function CalendrierPage() {
         </div>
       </div>
 
-      {/* Selected day label */}
+      {/* Section label */}
       <h2
-        className="text-white font-semibold text-lg mb-4"
+        className="text-white font-semibold text-xl mb-4"
         style={{ fontFamily: "'ESPeak', sans-serif" }}
       >
         {formatDayLabel(selectedDate)}
       </h2>
 
-      {/* Events list */}
-      {selectedEvents.length === 0 ? (
-        <p className="text-white/30 text-sm">Aucun événement ce jour.</p>
+      {/* Upcoming events */}
+      {upcomingEvents.length === 0 ? (
+        <p className="text-white/30 text-sm">Aucun événement à venir.</p>
       ) : (
         <div className="flex flex-col gap-3">
-          {selectedEvents.map((event) => (
+          {upcomingEvents.map((event) => (
             <button
               key={event._id}
               onClick={() => router.push(`/calendrier/${event._id}`)}
@@ -204,7 +207,7 @@ export default function CalendrierPage() {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <p
-                  className="text-white font-semibold text-sm truncate"
+                  className="text-white font-semibold text-sm"
                   style={{ fontFamily: "'SpaceGrotesk', sans-serif" }}
                 >
                   {event.title}
