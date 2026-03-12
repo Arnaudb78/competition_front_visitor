@@ -7,7 +7,7 @@ export function proxy(req: NextRequest) {
   const isPublic = pathname === "/" || pathname.startsWith("/auth");
   const isVisitor = pathname.startsWith("/visit");
 
-  if (isVisitor && pathname !== "/visit/desktop") {
+  if (pathname !== "/visit/desktop") {
     const ua = req.headers.get("user-agent") ?? "";
     const isMobile =
       /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(ua);

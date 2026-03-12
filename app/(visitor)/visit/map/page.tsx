@@ -18,43 +18,54 @@ export default function MapPage() {
   const router = useRouter();
   const [modules, setModules] = useState<ApiModule[]>([]);
   const [completedModules, setCompletedModules] = useState<number[]>([]);
+
   const [participants, setParticipants] = useState<string[]>([]);
+
   const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Charger les modules
+    const saved = localStorage.getItem("visit_participants");
+    if (saved) {
+      try { setParticipants(JSON.parse(saved)); } catch { /* ignore */ }
+    }
+
     fetch(`${API}/modules`)
       .then((r) => r.json())
-      .then((data) => setModules(data.filter((m: ApiModule) => m.mapX !== undefined)))
+      .then((data) =>
+        setModules(data.filter((m: ApiModule) => m.mapX !== undefined))
+      )
       .catch(() => {});
 
-    // Charger les modules déjà visités
     const groupId = getGroupId();
     if (groupId) {
       getGroup(groupId)
         .then((group) => {
           setCompletedModules(group.completedModules ?? []);
-          setParticipants(group.participants?.map((p: { name: string }) => p.name) ?? []);
+          setParticipants(
+            group.participants?.map((p: { name: string }) => p.name) ?? []
+          );
         })
         .catch(() => {});
-    } else {
-      const saved = localStorage.getItem("visit_participants");
-      if (saved) setParticipants(JSON.parse(saved));
     }
+    // else: participants already initialized from localStorage above
   }, []);
 
   function handleModuleClick(mod: ApiModule) {
     router.push(`/visit/module/${mod._id}?number=${mod.number}`);
   }
 
-  const allVisited = modules.length > 0 && modules.every((m) => completedModules.includes(m.number));
+  const allVisited =
+    modules.length > 0 &&
+    modules.every((m) => completedModules.includes(m.number));
 
   return (
-    <div className="flex flex-col min-h-dvh bg-[#0a0a0a]">
+    <div className="flex flex-col h-dvh overflow-hidden bg-[#0a0a0a]">
       {/* Header */}
-      <div className="px-5 pt-10 pb-4 flex items-center justify-between">
+      <div className="flex-shrink-0 px-5 pt-10 pb-3 flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-bold text-white">Plan de l&apos;expérience</h1>
+          <h1 className="text-lg font-bold text-white">
+            Plan de l&apos;expérience
+          </h1>
           <p className="text-white/50 text-xs mt-0.5">
             {completedModules.length}/{modules.length} modules visités
           </p>
@@ -72,17 +83,22 @@ export default function MapPage() {
       </div>
 
       {/* Barre de progression */}
-      <div className="px-5 mb-4">
+      <div className="flex-shrink-0 px-5 mb-3">
         <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
           <div
             className="h-full bg-purple-500 rounded-full transition-all duration-500"
-            style={{ width: modules.length ? `${(completedModules.length / modules.length) * 100}%` : "0%" }}
+            style={{
+              width: modules.length
+                ? `${(completedModules.length / modules.length) * 100}%`
+                : "0%",
+            }}
           />
         </div>
       </div>
 
-      {/* Plan */}
-      <div className="flex-1 px-4 pb-4">
+      {/* Plan + légende centrés verticalement */}
+      <div className="flex-1 flex flex-col justify-center">
+      <div className="px-4">
         <div
           ref={imgRef}
           className="relative w-full rounded-2xl overflow-hidden"
@@ -120,29 +136,29 @@ export default function MapPage() {
         </div>
       </div>
 
-      {/* Légende */}
-      <div className="px-5 pb-4 flex items-center gap-4 text-xs text-white/50">
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-purple-600" />
-          À visiter
+      {/* Légende + bouton — juste sous la map */}
+      <div className="px-5 pt-3 pb-6">
+        <div className="flex items-center gap-4 text-xs text-white/50 mb-4">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-purple-600" />
+            À visiter
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-[#f5c842]" />
+            Visité
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-[#f5c842]" />
-          Visité
-        </div>
-      </div>
 
-      {/* Bouton fin de visite */}
-      {allVisited && (
-        <div className="px-5 pb-8">
+        {allVisited && (
           <button
             onClick={() => router.push("/visit/end")}
             className="w-full py-4 rounded-full bg-[#f5c842] text-black font-semibold text-base active:scale-95 transition-all"
           >
             Terminer la visite 🎉
           </button>
-        </div>
-      )}
+        )}
+      </div>
+      </div>{/* end flex-1 centered */}
     </div>
   );
 }
