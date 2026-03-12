@@ -44,6 +44,53 @@ function completionChallengeId(c: ChallengeCompletion): string {
   return c.challengeId as string;
 }
 
+function ChallengeCard({ challenge, done }: { challenge: Challenge; done: boolean }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  return (
+    <Link
+      href={`/jeu/challenge/${challenge._id}`}
+      className="flex-shrink-0 active:scale-95 transition-transform"
+      style={{ width: 160 }}
+    >
+      <div
+        className="relative rounded-2xl overflow-hidden flex flex-col justify-end"
+        style={{ height: 200, background: "linear-gradient(135deg, #2a1a4a 0%, #3d1d6e 100%)" }}
+      >
+        {/* Skeleton shimmer while image loads */}
+        {challenge.imageUrl && !imgLoaded && (
+          <div className="absolute inset-0 skeleton" />
+        )}
+
+        {challenge.imageUrl ? (
+          <img
+            src={challenge.imageUrl}
+            alt={challenge.name}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+            style={{ opacity: imgLoaded ? 1 : 0 }}
+            onLoad={() => setImgLoaded(true)}
+          />
+        ) : (
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #4f0b8c 0%, #8b2fc9 100%)" }} />
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+        {done && (
+          <div className="absolute top-2.5 right-2.5 z-10">
+            <CheckCircle2 className="w-5 h-5 text-[#FFCA44]" fill="rgba(0,0,0,0.5)" strokeWidth={2} />
+          </div>
+        )}
+
+        <div className="relative z-10 p-3">
+          <p className="text-white font-bold text-sm leading-snug line-clamp-2">{challenge.name}</p>
+          {done && <p className="text-[#FFCA44] text-xs mt-0.5 font-medium">Terminé</p>}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default function ChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [completions, setCompletions] = useState<ChallengeCompletion[]>([]);
@@ -101,65 +148,13 @@ export default function ChallengesPage() {
         </p>
       ) : (
         <div className="flex gap-3 overflow-x-auto pb-2 mb-8 -mx-5 px-5 scrollbar-none">
-          {challenges.map((challenge) => {
-            const done = completedIds.has(challenge._id);
-            return (
-              <Link
-                key={challenge._id}
-                href={`/jeu/challenge/${challenge._id}`}
-                className="flex-shrink-0 active:scale-95 transition-transform"
-                style={{ width: 160 }}
-              >
-                <div
-                  className="relative rounded-2xl overflow-hidden flex flex-col justify-end"
-                  style={{ height: 200 }}
-                >
-                  {/* Background image or gradient */}
-                  {challenge.imageUrl ? (
-                    <img
-                      src={challenge.imageUrl}
-                      alt={challenge.name}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #4f0b8c 0%, #8b2fc9 100%)",
-                      }}
-                    />
-                  )}
-
-                  {/* Dark gradient overlay at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                  {/* Completed badge */}
-                  {done && (
-                    <div className="absolute top-2.5 right-2.5 z-10">
-                      <CheckCircle2
-                        className="w-5 h-5 text-[#FFCA44]"
-                        fill="rgba(0,0,0,0.5)"
-                        strokeWidth={2}
-                      />
-                    </div>
-                  )}
-
-                  {/* Name */}
-                  <div className="relative z-10 p-3">
-                    <p className="text-white font-bold text-sm leading-snug line-clamp-2">
-                      {challenge.name}
-                    </p>
-                    {done && (
-                      <p className="text-[#FFCA44] text-xs mt-0.5 font-medium">
-                        Terminé
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {challenges.map((challenge) => (
+            <ChallengeCard
+              key={challenge._id}
+              challenge={challenge}
+              done={completedIds.has(challenge._id)}
+            />
+          ))}
         </div>
       )}
 
@@ -188,7 +183,9 @@ export default function ChallengesPage() {
                     <img
                       src={img}
                       alt={name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                      style={{ opacity: 0 }}
+                      onLoad={(e) => { (e.target as HTMLImageElement).style.opacity = "1"; }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-purple-600/30" />
