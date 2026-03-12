@@ -15,6 +15,7 @@ export async function createGroup(participants: ParticipantInput[]): Promise<str
   const data = await res.json()
   localStorage.setItem('visit_group_id', data._id)
   localStorage.setItem('visit_participants', JSON.stringify(participants.map((p) => p.name)))
+  localStorage.setItem('visit_participants_data', JSON.stringify(participants))
   return data._id
 }
 
