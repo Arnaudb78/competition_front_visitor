@@ -48,8 +48,16 @@ export default function MediaPage() {
 
       {activeTab === "replays" && <ReplaysFeed />}
       {activeTab === "live" && (
-        <div className="px-5">
-          <p className="text-white/40 text-sm">Live — à venir…</p>
+        <div className="flex flex-col items-center justify-center px-8 pt-24 text-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-2">
+            <span className="text-2xl">📡</span>
+          </div>
+          <h2 className="text-white font-semibold text-lg">Aucun live en cours</h2>
+          <p className="text-white/40 text-sm leading-relaxed">
+            Pas de diffusion en direct pour le moment.
+            <br />
+            Vous serez notifié dès qu'un live démarre !
+          </p>
         </div>
       )}
     </div>

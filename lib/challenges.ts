@@ -81,3 +81,19 @@ export async function getMyProfile(): Promise<MyProfile | null> {
     return null
   }
 }
+
+export interface Event {
+  _id: string
+  title: string
+  organizer?: string
+  date: string
+  imageUrl?: string
+}
+
+export async function getEvents(): Promise<Event[]> {
+  try {
+    return await apiFetch<Event[]>('/events')
+  } catch {
+    return []
+  }
+}

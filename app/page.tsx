@@ -50,6 +50,12 @@ export default function AuthPage() {
   const [signupError, setSignupError] = useState("");
   const [loadingSignin, setLoadingSignin] = useState(false);
   const [loadingSignup, setLoadingSignup] = useState(false);
+  const [toast, setToast] = useState(false);
+
+  function showSocialToast() {
+    setToast(true);
+    setTimeout(() => setToast(false), 4000);
+  }
 
   async function handleSignin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -123,6 +129,22 @@ export default function AuthPage() {
   }
 
   return (
+    <>
+      {/* Toast */}
+      <div
+        className="fixed top-6 inset-x-0 z-50 flex justify-center px-6 transition-all duration-300"
+        style={{ opacity: toast ? 1 : 0, transform: `translateY(${toast ? 0 : -12}px)`, pointerEvents: "none" }}
+      >
+        <div className="bg-[#1e1b30] border border-white/10 rounded-2xl px-4 py-3 flex items-start gap-3 shadow-xl">
+          <span className="text-lg mt-0.5">⚠️</span>
+          <p className="text-white/80 text-xs leading-relaxed">
+            <span className="font-semibold text-white">Connexion sociale indisponible.</span>
+            <br />
+            Merci d'utiliser le formulaire email ci-dessus.
+          </p>
+        </div>
+      </div>
+
     <main
       className="min-h-dvh flex flex-col items-center justify-center px-6"
       style={{
@@ -266,6 +288,7 @@ export default function AuthPage() {
               key={label}
               type="button"
               aria-label={label}
+              onClick={showSocialToast}
               className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-sm active:scale-95 transition-transform"
             >
               {icon}
@@ -304,5 +327,6 @@ export default function AuthPage() {
         </p>
       </div>
     </main>
+    </>
   );
 }
