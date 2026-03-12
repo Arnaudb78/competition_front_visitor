@@ -58,9 +58,12 @@ function EventCard({
       </div>
 
       {/* Bouton + */}
-      <button className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+      <Link
+        href={`/calendrier/${event.id}`}
+        className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform"
+      >
         <Plus className="w-4 h-4 text-white/60" strokeWidth={2} />
-      </button>
+      </Link>
     </div>
   );
 }
