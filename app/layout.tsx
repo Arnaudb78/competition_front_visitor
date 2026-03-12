@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "Mirokaï Experience",
   description: "Venez découvrir l'incroyable Mirokaï experience au sein de Paris.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/Logo-mirokaÏ.png",
+    shortcut: "/Logo-mirokaÏ.png",
+    apple: "/Logo-mirokaÏ.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

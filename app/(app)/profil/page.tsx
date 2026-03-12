@@ -51,7 +51,10 @@ export default function ProfilSettingsPage() {
               <span className="text-white text-sm font-medium flex-1 text-left">
                 {label}
               </span>
-              <ChevronLeft className="w-4 h-4 text-white/30 rotate-180" strokeWidth={1.5} />
+              <ChevronLeft
+                className="w-4 h-4 text-white/30 rotate-180"
+                strokeWidth={1.5}
+              />
             </button>
           ))}
         </div>
@@ -63,6 +66,12 @@ export default function ProfilSettingsPage() {
         >
           <LogOut className="w-4 h-4" strokeWidth={1.5} />
           Se déconnecter
+        </button>
+        <button
+          onClick={() => router.push("/visit")}
+          className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium text-sm active:scale-95 transition-all"
+        >
+          Mode visite
         </button>
       </div>
     </div>
