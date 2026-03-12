@@ -64,7 +64,7 @@ export default function JeuPage() {
           className="text-3xl font-bold text-white leading-tight"
           style={{ fontFamily: "'ESPeak', sans-serif" }}
         >
-          L'espace jeu
+          L&apos;espace jeu
         </h1>
         {profile !== null && (
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 flex-shrink-0 ml-3 mt-1">
@@ -172,7 +172,7 @@ export default function JeuPage() {
           </div>
         ) : completions.length === 0 ? (
           <p className="text-white/30 text-sm">
-            Aucun challenge terminé pour l'instant.
+            Aucun challenge terminé pour l&apos;instant.
           </p>
         ) : (
           <div className="flex flex-col gap-4">
