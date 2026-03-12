@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Share2 } from "lucide-react";
+import { Trophy, Share2, UserPlus } from "lucide-react";
 import { getGroupId, getGroup, endVisit } from "@/lib/visit";
 
 interface Participant {
@@ -22,12 +22,16 @@ export default function EndPage() {
         try {
           await endVisit();
           const group = await getGroup(id);
-          const sorted = [...group.participants].sort((a: Participant, b: Participant) => b.score - a.score);
+          const sorted = [...group.participants].sort(
+            (a: Participant, b: Participant) => b.score - a.score,
+          );
           setParticipants(sorted);
         } catch {
           const saved = localStorage.getItem("visit_participants");
           if (saved) {
-            setParticipants(JSON.parse(saved).map((name: string) => ({ name, score: 0 })));
+            setParticipants(
+              JSON.parse(saved).map((name: string) => ({ name, score: 0 })),
+            );
           }
         }
       }
@@ -39,11 +43,13 @@ export default function EndPage() {
   function handleShare() {
     const url = `${window.location.origin}/`;
     if (navigator.share) {
-      navigator.share({
-        title: "Mirokaï Experience",
-        text: "J'ai visité la Mirokaï Experience ! Crée ton compte pour revivre l'aventure.",
-        url,
-      }).catch(() => {});
+      navigator
+        .share({
+          title: "Mirokaï Experience",
+          text: "J'ai visité la Mirokaï Experience ! Crée ton compte pour revivre l'aventure.",
+          url,
+        })
+        .catch(() => {});
     } else {
       navigator.clipboard.writeText(url);
     }
@@ -54,7 +60,9 @@ export default function EndPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-dvh">
-        <p className="text-white/40 animate-pulse text-sm">Calcul des scores…</p>
+        <p className="text-white/40 animate-pulse text-sm">
+          Calcul des scores…
+        </p>
       </div>
     );
   }
@@ -88,13 +96,17 @@ export default function EndPage() {
       {/* Classement */}
       {participants.length > 0 && (
         <div className="flex flex-col gap-3 mb-8">
-          <p className="text-white/40 text-xs uppercase tracking-widest">Classement</p>
+          <p className="text-white/40 text-xs uppercase tracking-widest">
+            Classement
+          </p>
           {participants.map((p, i) => (
             <div
               key={p.name}
               className="flex items-center gap-4 bg-white/5 rounded-2xl px-4 py-3"
             >
-              <span className={`text-lg font-bold w-6 ${i === 0 ? "text-[#f5c842]" : "text-white/30"}`}>
+              <span
+                className={`text-lg font-bold w-6 ${i === 0 ? "text-[#f5c842]" : "text-white/30"}`}
+              >
                 {i + 1}
               </span>
               <span className="flex-1 text-white font-medium">{p.name}</span>
@@ -111,13 +123,14 @@ export default function EndPage() {
           className="w-full py-4 rounded-full bg-purple-600 text-white font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all"
         >
           <Share2 className="w-5 h-5" />
-          Partager & créer un compte
+          Partager mes résultats
         </button>
         <button
-          onClick={() => router.push("/")}
-          className="w-full py-4 rounded-full bg-white/10 text-white/70 font-medium text-sm active:scale-95 transition-all"
+          onClick={() => router.push("/?tab=signup")}
+          className="w-full py-4 rounded-full bg-[#f5c842] text-black font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all"
         >
-          Retour à l&apos;accueil
+          <UserPlus className="w-5 h-5" />
+          Créer mon compte
         </button>
       </div>
     </div>

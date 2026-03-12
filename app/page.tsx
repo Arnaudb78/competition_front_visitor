@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -45,7 +45,10 @@ function IdCardIcon() {
 
 export default function AuthPage() {
   const router = useRouter();
-  const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState<"signin" | "signup">(
+    searchParams.get("tab") === "signup" ? "signup" : "signin"
+  );
   const [signinError, setSigninError] = useState("");
   const [signupError, setSignupError] = useState("");
   const [loadingSignin, setLoadingSignin] = useState(false);

@@ -1,6 +1,15 @@
 "use client";
 
-import { ChevronLeft, User, Mail, Lock, LogOut, Check, X } from "lucide-react";
+import {
+  ChevronLeft,
+  User,
+  Mail,
+  Lock,
+  LogOut,
+  Check,
+  X,
+  CircleQuestionMark,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api";
@@ -51,10 +60,11 @@ export default function ProfilSettingsPage() {
     setLoading(true);
     setError("");
     try {
-      const updated = await apiFetch<{ firstName?: string; lastName?: string; email?: string }>(
-        "/accounts/me",
-        { method: "PATCH", body: JSON.stringify(body) }
-      );
+      const updated = await apiFetch<{
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+      }>("/accounts/me", { method: "PATCH", body: JSON.stringify(body) });
       if (updated.firstName) {
         const maxAge = 7 * 24 * 3600;
         document.cookie = `account_firstName=${encodeURIComponent(updated.firstName)}; path=/; max-age=${maxAge}; SameSite=Lax`;
@@ -63,7 +73,9 @@ export default function ProfilSettingsPage() {
         setLastName(updated.lastName ?? lastName);
       }
       if (updated.email) setEmail(updated.email);
-      setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
       setOpen(null);
       setSuccess(section);
       setTimeout(() => setSuccess(null), 2500);
@@ -86,8 +98,14 @@ export default function ProfilSettingsPage() {
 
   function handlePassword(e: React.FormEvent) {
     e.preventDefault();
-    if (newPassword !== confirmPassword) { setError("Les mots de passe ne correspondent pas"); return; }
-    if (newPassword.length < 6) { setError("Minimum 6 caractères"); return; }
+    if (newPassword !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setError("Minimum 6 caractères");
+      return;
+    }
     save("password", { currentPassword, newPassword });
   }
 
@@ -108,7 +126,10 @@ export default function ProfilSettingsPage() {
         >
           <ChevronLeft className="w-5 h-5 text-white" strokeWidth={1.5} />
         </button>
-        <h1 className="text-xl font-bold text-white" style={{ fontFamily: "'ESPeak', sans-serif" }}>
+        <h1
+          className="text-xl font-bold text-white"
+          style={{ fontFamily: "'ESPeak', sans-serif" }}
+        >
           Paramètres
         </h1>
       </div>
@@ -116,7 +137,9 @@ export default function ProfilSettingsPage() {
       <div className="flex flex-col gap-4">
         {/* Compte */}
         <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
-          <p className="text-white/40 text-xs uppercase tracking-widest px-4 pt-4 pb-2">Compte</p>
+          <p className="text-white/40 text-xs uppercase tracking-widest px-4 pt-4 pb-2">
+            Compte
+          </p>
 
           {/* Nom & Prénom */}
           <div className="border-t border-white/5">
@@ -125,19 +148,31 @@ export default function ProfilSettingsPage() {
               className="w-full flex items-center gap-4 px-4 py-3.5 active:bg-white/5 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                {success === "name" ? <Check className="w-4 h-4 text-green-400" strokeWidth={2} /> : <User className="w-4 h-4 text-white/60" strokeWidth={1.5} />}
+                {success === "name" ? (
+                  <Check className="w-4 h-4 text-green-400" strokeWidth={2} />
+                ) : (
+                  <User className="w-4 h-4 text-white/60" strokeWidth={1.5} />
+                )}
               </div>
               <span className="text-white text-sm font-medium flex-1 text-left">
-                {firstName || lastName ? `${firstName} ${lastName}` : "Nom & Prénom"}
+                {firstName || lastName
+                  ? `${firstName} ${lastName}`
+                  : "Nom & Prénom"}
               </span>
               <ChevronLeft
                 className="w-4 h-4 text-white/30 transition-transform duration-200"
-                style={{ transform: open === "name" ? "rotate(270deg)" : "rotate(180deg)" }}
+                style={{
+                  transform:
+                    open === "name" ? "rotate(270deg)" : "rotate(180deg)",
+                }}
                 strokeWidth={1.5}
               />
             </button>
             {open === "name" && (
-              <form onSubmit={handleName} className="px-4 pb-4 flex flex-col gap-3">
+              <form
+                onSubmit={handleName}
+                className="px-4 pb-4 flex flex-col gap-3"
+              >
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     value={firstName}
@@ -154,7 +189,9 @@ export default function ProfilSettingsPage() {
                     className={inputClass()}
                   />
                 </div>
-                {error && open === "name" && <p className="text-red-400 text-xs">{error}</p>}
+                {error && open === "name" && (
+                  <p className="text-red-400 text-xs">{error}</p>
+                )}
                 <SaveRow loading={loading} onCancel={() => toggle("name")} />
               </form>
             )}
@@ -167,19 +204,29 @@ export default function ProfilSettingsPage() {
               className="w-full flex items-center gap-4 px-4 py-3.5 active:bg-white/5 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                {success === "email" ? <Check className="w-4 h-4 text-green-400" strokeWidth={2} /> : <Mail className="w-4 h-4 text-white/60" strokeWidth={1.5} />}
+                {success === "email" ? (
+                  <Check className="w-4 h-4 text-green-400" strokeWidth={2} />
+                ) : (
+                  <Mail className="w-4 h-4 text-white/60" strokeWidth={1.5} />
+                )}
               </div>
               <span className="text-white text-sm font-medium flex-1 text-left truncate">
                 {email || "Adresse e-mail"}
               </span>
               <ChevronLeft
                 className="w-4 h-4 text-white/30 flex-shrink-0 transition-transform duration-200"
-                style={{ transform: open === "email" ? "rotate(270deg)" : "rotate(180deg)" }}
+                style={{
+                  transform:
+                    open === "email" ? "rotate(270deg)" : "rotate(180deg)",
+                }}
                 strokeWidth={1.5}
               />
             </button>
             {open === "email" && (
-              <form onSubmit={handleEmail} className="px-4 pb-4 flex flex-col gap-3">
+              <form
+                onSubmit={handleEmail}
+                className="px-4 pb-4 flex flex-col gap-3"
+              >
                 <input
                   type="email"
                   value={email}
@@ -188,7 +235,9 @@ export default function ProfilSettingsPage() {
                   required
                   className={inputClass()}
                 />
-                {error && open === "email" && <p className="text-red-400 text-xs">{error}</p>}
+                {error && open === "email" && (
+                  <p className="text-red-400 text-xs">{error}</p>
+                )}
                 <SaveRow loading={loading} onCancel={() => toggle("email")} />
               </form>
             )}
@@ -201,17 +250,29 @@ export default function ProfilSettingsPage() {
               className="w-full flex items-center gap-4 px-4 py-3.5 active:bg-white/5 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                {success === "password" ? <Check className="w-4 h-4 text-green-400" strokeWidth={2} /> : <Lock className="w-4 h-4 text-white/60" strokeWidth={1.5} />}
+                {success === "password" ? (
+                  <Check className="w-4 h-4 text-green-400" strokeWidth={2} />
+                ) : (
+                  <Lock className="w-4 h-4 text-white/60" strokeWidth={1.5} />
+                )}
               </div>
-              <span className="text-white text-sm font-medium flex-1 text-left">Mot de passe</span>
+              <span className="text-white text-sm font-medium flex-1 text-left">
+                Mot de passe
+              </span>
               <ChevronLeft
                 className="w-4 h-4 text-white/30 transition-transform duration-200"
-                style={{ transform: open === "password" ? "rotate(270deg)" : "rotate(180deg)" }}
+                style={{
+                  transform:
+                    open === "password" ? "rotate(270deg)" : "rotate(180deg)",
+                }}
                 strokeWidth={1.5}
               />
             </button>
             {open === "password" && (
-              <form onSubmit={handlePassword} className="px-4 pb-4 flex flex-col gap-3">
+              <form
+                onSubmit={handlePassword}
+                className="px-4 pb-4 flex flex-col gap-3"
+              >
                 <input
                   type="password"
                   value={currentPassword}
@@ -236,10 +297,43 @@ export default function ProfilSettingsPage() {
                   required
                   className={inputClass()}
                 />
-                {error && open === "password" && <p className="text-red-400 text-xs">{error}</p>}
-                <SaveRow loading={loading} onCancel={() => toggle("password")} />
+                {error && open === "password" && (
+                  <p className="text-red-400 text-xs">{error}</p>
+                )}
+                <SaveRow
+                  loading={loading}
+                  onCancel={() => toggle("password")}
+                />
               </form>
             )}
+          </div>
+        </div>
+        {/* F.A.Q */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+          <p className="text-white/40 text-xs uppercase tracking-widest px-4 pt-4 pb-2">
+            F.A.Q
+          </p>
+
+          {/* Question / Réponse */}
+          <div className="border-t border-white/5">
+            <button
+              onClick={() => router.push("/faq")}
+              className="w-full flex items-center gap-4 px-4 py-3.5 active:bg-white/5 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                <CircleQuestionMark
+                  className="w-4 h-4 text-white/60"
+                  strokeWidth={1.5}
+                />
+              </div>
+              <span className="text-white text-sm font-medium flex-1 text-left">
+                Question / Réponse
+              </span>
+              <ChevronLeft
+                className="w-4 h-4 text-white/30 transition-transform duration-200"
+                strokeWidth={1.5}
+              />
+            </button>
           </div>
         </div>
 
@@ -256,7 +350,13 @@ export default function ProfilSettingsPage() {
   );
 }
 
-function SaveRow({ loading, onCancel }: { loading: boolean; onCancel: () => void }) {
+function SaveRow({
+  loading,
+  onCancel,
+}: {
+  loading: boolean;
+  onCancel: () => void;
+}) {
   return (
     <div className="flex gap-2 pt-1">
       <button
