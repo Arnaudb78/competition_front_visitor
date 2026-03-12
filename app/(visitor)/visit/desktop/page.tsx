@@ -2,6 +2,7 @@
 
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function DesktopBlockPage() {
   const [url, setUrl] = useState("");
@@ -11,13 +12,21 @@ export default function DesktopBlockPage() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-dvh px-8 text-center gap-8">
-      <div
-        className="w-20 h-20 rounded-3xl flex items-center justify-center text-3xl font-black"
-        style={{ background: "linear-gradient(135deg, #7c3aed, #a855f7)" }}
-      >
-        M
-      </div>
+    <div
+      className="flex flex-col items-center justify-center min-h-dvh px-8 text-center gap-6"
+      style={{
+        background:
+          "radial-gradient(ellipse at 50% 25%, #2a1a5e 0%, #0d0b1e 55%, #080612 100%)",
+      }}
+    >
+      <Image
+        src="/kids_finish_module.png"
+        alt="Mirokaï"
+        width={200}
+        height={220}
+        className="object-contain drop-shadow-xl"
+        priority
+      />
 
       <div className="flex flex-col gap-3">
         <h1 className="text-2xl font-bold text-white">
